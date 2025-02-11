@@ -6,9 +6,9 @@ import { useState } from "react";
 const App = () => {
   const [count, setCount] = useState(0);
   const [nextQuestion, setNextQuestion] = useState(QUESTIONS[count].answers);
-  const [newArray, setNewArray] = useState([]);
+  const [newArrayQuestion, setNewArrayQuestion] = useState([]);
   const [result, setResult] = useState(0);
-  console.log(newArray);
+  const [newCount, setNewCount] = useState(1);
 
   function filterQuestions(selectedAnswerText) {
     const updatedAnswers = nextQuestion.filter(
@@ -21,33 +21,31 @@ const App = () => {
       question: QUESTIONS[count].text,
       answers: updatedAnswers,
     };
-    setNewArray((prevArray) => [...prevArray, newQuestion]);
-    if (newArray.length < QUESTIONS.length - 1) {
-      setCount((prevCount) => {
-        const newCount = prevCount + 1;
-        if (newCount < QUESTIONS.length) {
-          setNextQuestion(QUESTIONS[newCount].answers);
-        }
+    setNewArrayQuestion((prevArray) => [...prevArray, newQuestion]);
+    if (newArrayQuestion.length < QUESTIONS.length - 1) {
+      setCount(count + 1);
+      setNewCount(newCount + 1);
 
-        return newCount;
-      });
+      if (count < QUESTIONS.length) {
+        setNextQuestion(QUESTIONS[newCount].answers);
+      }
     }
   }
 
   const refreshPage = () => {
     setShowQuiz(false);
-    setNewArray([]);
+    setNewArrayQuestion([]);
     setResult(0);
     setCount(0);
+    setNewCount(1);
     setNextQuestion(QUESTIONS[0].answers);
   };
   const [showQuiz, setShowQuiz] = useState(false);
   function startQuiz() {
     setShowQuiz(true);
-    setNewArray([]);
+    setNewArrayQuestion([]);
     setResult(0);
   }
-  console.log(result);
 
   return (
     <>
@@ -60,7 +58,7 @@ const App = () => {
             label="Rozpocznij Quiz"
           ></Button>
         </>
-      ) : newArray.length < QUESTIONS.length ? (
+      ) : newArrayQuestion.length < QUESTIONS.length ? (
         <Questionscreen
           QUESTIONS={QUESTIONS[count]}
           handleAnswer={filterQuestions}
@@ -91,11 +89,11 @@ const App = () => {
             </span>
           )}
           <h4 style={{ display: "block", textAlign: "center" }}>
-            Twój wynik to {((result / newArray.length) * 100).toFixed(2)}%{" "}
-            {result}z {newArray.length} poprawnych odpowiedzi
+            Twój wynik to {((result / newArrayQuestion.length) * 100).toFixed(2)}%{" "}
+            {result}z {newArrayQuestion.length} poprawnych odpowiedzi
           </h4>
 
-          {newArray.map((question, index) => (
+          {newArrayQuestion.map((question, index) => (
             <div key={index}>
               <h2>
                 Pytanie {index + 1} :{question.question}
